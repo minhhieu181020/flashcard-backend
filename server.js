@@ -16,13 +16,15 @@ app.get("/listStudy", (req, res) => {
 // API 2: List Flashcard (EN - VI)
 app.get("/listFlashcard", (req, res) => {
   const flashcards = [
-    { id: 1, word: "apple", meaning: "quả táo" },
-    { id: 2, word: "book", meaning: "quyển sách" },
-    { id: 3, word: "computer", meaning: "máy tính" },
-    { id: 4, word: "school", meaning: "trường học" },
+    // { id: 1, word: "apple", meaning: "quả táo" },
+    // { id: 2, word: "book", meaning: "quyển sách" },
+    // { id: 3, word: "computer", meaning: "máy tính" },
+    // { id: 4, word: "school", meaning: "trường học" },
   ];
   res.json(flashcards);
 });
+// API 3: Tạo danh sách 
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
