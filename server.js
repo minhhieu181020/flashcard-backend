@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // API 1: List các bài học
 app.get("/listStudy", (req, res) => {
@@ -25,5 +25,5 @@ app.get("/listFlashcard", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
