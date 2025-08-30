@@ -18,10 +18,14 @@ mongoose.connect("mongodb://localhost:27017/flashcardDB", { useNewUrlParser: tru
 
 // Schema và Model cho Flashcard
 const flashcardSchema = new mongoose.Schema({
-  word: { type: String, required: true },
-  meaning: { type: String, required: true },
-  title: { type: String, required: true },
-  description: { type: String, default: "No description provided" },
+ title: { type: String, required: true },
+  description: { type: String, required: true },
+  terms: [
+    {
+      term: { type: String, required: true },
+      meaning: { type: String, required: true }
+    }
+  ],
   date: { type: Date, default: Date.now },
 });
 
@@ -40,10 +44,11 @@ const Study = mongoose.model("Study", studySchema);
 // ========================= API 1: List Study =========================
 app.get("/listStudy", async (req, res) => {
   try {
-    const studyList = await Study.find();  // Lấy tất cả các study từ MongoDB
-    res.json(studyList);
+    // Truy vấn tất cả flashcards từ MongoDB
+    const flashcards = await Flashcard.find();  // Tìm tất cả flashcards trong collection flashcards
+    res.json(flashcards);  // Trả về dữ liệu flashcards
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch studies", details: error });
+    res.status(500).json({ error: "Failed to fetch flashcards", details: error });
   }
 });
 
@@ -66,18 +71,18 @@ router.post("/listFlashcard", (req, res) => {
 
 // ========================= API 3: Create Flashcard =========================
 router.post("/createFlashcard", async (req, res) => {
-  const { word, meaning, title, description } = req.body;
+  const { title, description, terms } = req.body;
 
-  if (!word || !meaning || !title || !description) {
-    return res.status(400).json({ error: "All fields (word, meaning, title, description) are required" });
+  // Kiểm tra nếu thiếu các trường bắt buộc hoặc `terms` không phải là mảng
+  if (!title || !description || !Array.isArray(terms) || terms.length === 0) {
+    return res.status(400).json({ error: "All fields (title, description, and terms) are required and terms must be an array" });
   }
 
   // Tạo flashcard mới
   const newFlashcard = new Flashcard({
-    word,
-    meaning,
     title,
     description,
+    terms,  // Mảng terms đã được gửi lên
   });
 
   try {
@@ -91,6 +96,7 @@ router.post("/createFlashcard", async (req, res) => {
     res.status(500).json({ error: "Failed to create flashcard", details: error });
   }
 });
+
 
 // Gắn router vào app
 app.use("/", router);
