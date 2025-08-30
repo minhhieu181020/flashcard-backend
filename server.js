@@ -70,32 +70,38 @@ router.post("/listFlashcard", (req, res) => {
 });
 
 // ========================= API 3: Create Flashcard =========================
-router.post("/createFlashcard", async (req, res) => {
+app.post('/createFlashcard', async (req, res) => {
   const { title, description, terms } = req.body;
 
-  // Kiểm tra nếu thiếu các trường bắt buộc hoặc `terms` không phải là mảng
-  if (!title || !description || !Array.isArray(terms) || terms.length === 0) {
-    return res.status(400).json({ error: "All fields (title, description, and terms) are required and terms must be an array" });
+  // Kiểm tra các trường
+  if (!title || !description || !terms || terms.length === 0) {
+    console.error('Missing fields: ', { title, description, terms });
+    return res.status(400).json({ error: 'All fields (title, description, and terms) are required.' });
   }
 
-  // Tạo flashcard mới
-  const newFlashcard = new Flashcard({
-    title,
-    description,
-    terms,  // Mảng terms đã được gửi lên
-  });
-
   try {
-    // Lưu flashcard vào MongoDB
+    const newFlashcard = new Flashcard({
+      title,
+      description,
+      terms,
+    });
+
+    // Lưu vào MongoDB
     await newFlashcard.save();
+    
     res.status(201).json({
-      message: "Flashcard created successfully!",
+      message: 'Flashcard created successfully!',
       flashcard: newFlashcard,
     });
   } catch (error) {
-    res.status(500).json({ error: "Failed to create flashcard", details: error });
+    console.error('Error creating flashcard:', error);  // In chi tiết lỗi
+    res.status(500).json({
+      error: 'Failed to create flashcard',
+      details: error.toString(),  // Gửi chi tiết lỗi từ phía server
+    });
   }
 });
+
 
 
 // Gắn router vào app
