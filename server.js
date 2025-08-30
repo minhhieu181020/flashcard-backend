@@ -8,8 +8,9 @@ const router = express.Router();
 app.use(express.json());
 
 // Kết nối MongoDB
-
-mongoose.connect('mongodb://localhost:27017/flashcardDB', {
+const mongoURI = 'mongodb+srv://flashcardUser:hieu181020@FlashCard.iknr9ht.mongodb.net/?retryWrites=true&w=majority&appName=FlashCard';
+// const mongoURI = 'mongodb+srv://flashcardUser:hieu181020@FlashCard.mongodb.net/flashcardDB?retryWrites=true&w=majority '
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 50000,  // Tăng thời gian timeout
@@ -113,5 +114,5 @@ app.use("/", router);
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running at ${PORT}`);
 });
