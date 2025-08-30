@@ -46,16 +46,6 @@ const studySchema = new mongoose.Schema({
 
 const Study = mongoose.model("Study", studySchema);
 
-// ========================= API 1: List Study =========================
-// app.get("/listStudy", async (req, res) => {
-//   try {
-//     // Truy vấn tất cả flashcards từ MongoDB
-//     const flashcards = await Flashcard.find();  // Tìm tất cả flashcards trong collection flashcards
-//     res.json(flashcards);  // Trả về dữ liệu flashcards
-//   } catch (error) {
-//     res.status(500).json({ error: "Failed to fetch flashcards", details: error });
-//   }
-// });
 app.get('/listStudy', async (req, res) => {
   try {
     // Truy vấn tất cả các study từ database
@@ -63,7 +53,7 @@ app.get('/listStudy', async (req, res) => {
 
     // Định dạng dữ liệu và trả về kết quả
     const result = studies.map((study, index) => ({
-      id: index + 1,  // Tạo id tự động
+      id: studies.id,  //id tu database
       title: study.title,
       subtitle: study.description || 'Học phần',  // Nếu không có subtitle, gán mặc định
       wordCount: study.terms.length,  // Tính wordCount từ số lượng terms
