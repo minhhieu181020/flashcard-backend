@@ -53,7 +53,7 @@ app.get('/listStudy', async (req, res) => {
 
     // Định dạng dữ liệu và trả về kết quả
     const result = studies.map((study, index) => ({
-      id: studies.id,  //id tu database
+      id: study.id,  //id tu database
       title: study.title,
       subtitle: study.description || 'Học phần',  // Nếu không có subtitle, gán mặc định
       wordCount: study.terms.length,  // Tính wordCount từ số lượng terms
