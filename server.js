@@ -5,11 +5,27 @@ const PORT = process.env.PORT || 3000;
 // API 1: List các bài học
 app.get("/listStudy", (req, res) => {
   const studyList = [
-    // { id: 1, title: "IELTS 17 - set 4 - passage 1,2,3", numberOfWords: "13"},
-    // { id: 2, title: "IELTS 17 - set 2 - passage 1,2,3" , numberOfWords: "12"},
-    // { id: 3, title: "Lesson 3: Vocabulary for Travel", numberOfWords: "24" },
-    // { id: 4, title: "Lesson 4: Daily Conversation", numberOfWords: "9" },
-  ];
+   {
+    id: 1,
+    title: "IELTS 17 - set 4 - passage 1,2,3",
+    subtitle: "Học phần",
+    wordCount: 15,
+    category: "cambridge 17",
+  },
+  {
+    id: 2,
+    title: "IELTS 17 - set 3 - passage 1,2,3",
+    subtitle: "Học phần",
+    wordCount: 20,
+    category: "cambridge 17",
+  },
+  {
+    id: 3,
+    title: "IELTS 16 - set 4 - passage 1,2,3",
+    subtitle: "Học phần",
+    wordCount: 22,
+    category: "cambridge 16",
+  }];
   res.json(studyList);
 });
 
@@ -19,7 +35,7 @@ app.get("/listFlashcard", (req, res) => {
     { id: 1, word: "apple", meaning: "quả táo" },
     { id: 2, word: "book", meaning: "quyển sách" },
     { id: 3, word: "computer", meaning: "máy tính" },
-    { id: 4, word: "school", meaning: "trường học" },
+    { id: 4, word: "school", meaning: "trường Hieu" },
   ];
   res.json(flashcards);
 });
