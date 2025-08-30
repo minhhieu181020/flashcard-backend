@@ -8,13 +8,17 @@ const router = express.Router();
 app.use(express.json());
 
 // Kết nối MongoDB
-mongoose.connect("mongodb://localhost:27017/flashcardDB", { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB", err);
-  });
+
+mongoose.connect('mongodb://localhost:27017/flashcardDB', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 50000,  // Tăng thời gian timeout
+}).then(() => {
+  console.log('MongoDB connected successfully!');
+}).catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
+
 
 // Schema và Model cho Flashcard
 const flashcardSchema = new mongoose.Schema({
