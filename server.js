@@ -23,7 +23,7 @@ mongoose.connect(mongoURI, {
 
 // Schema và Model cho Flashcard
 const flashcardSchema = new mongoose.Schema({
- title: { type: String, required: true },
+  title: { type: String, required: true, unique: true },  // Đảm bảo title là duy nhất
   description: { type: String, required: true },
   terms: [
     {
@@ -35,6 +35,7 @@ const flashcardSchema = new mongoose.Schema({
 });
 
 const Flashcard = mongoose.model("Flashcard", flashcardSchema);
+
 
 // Schema và Model cho Study
 const studySchema = new mongoose.Schema({
@@ -68,13 +69,13 @@ app.get('/listStudy', async (req, res) => {
 
 // ========================= API 2: List Flashcard (EN-VI) =========================
 router.post("/listFlashcard", (req, res) => {
-  const { studyId } = req.body || {};
-  if (!studyId) {
-    return res.status(400).json({ error: "studyId is required" });
+  const { title } = req.body || {};
+  if (!title) {
+    return res.status(400).json({ error: "title is required" });
   }
 
-  // Truy vấn flashcards từ MongoDB (Tương tự API listStudy)
-  Flashcard.find({ studyId })
+  // Truy vấn flashcards từ MongoDB theo title
+  Flashcard.find({ title })
     .then(flashcards => {
       res.json(flashcards);
     })
@@ -83,38 +84,48 @@ router.post("/listFlashcard", (req, res) => {
     });
 });
 
+
 // ========================= API 3: Create Flashcard =========================
 app.post('/createFlashcard', async (req, res) => {
   const { title, description, terms } = req.body;
 
-  // Kiểm tra các trường
+  // Kiểm tra các trường bắt buộc
   if (!title || !description || !terms || terms.length === 0) {
     console.error('Missing fields: ', { title, description, terms });
     return res.status(400).json({ error: 'All fields (title, description, and terms) are required.' });
   }
 
   try {
+    // Kiểm tra xem title có bị trùng hay không
+    const existingFlashcard = await Flashcard.findOne({ title });
+
+    if (existingFlashcard) {
+      return res.status(400).json({ error: 'Flashcard with this title already exists.' });
+    }
+
+    // Nếu title không trùng, tạo flashcard mới
     const newFlashcard = new Flashcard({
       title,
       description,
       terms,
     });
 
-    // Lưu vào MongoDB
+    // Lưu flashcard vào MongoDB
     await newFlashcard.save();
-    
+
     res.status(201).json({
       message: 'Flashcard created successfully!',
       flashcard: newFlashcard,
     });
   } catch (error) {
-    console.error('Error creating flashcard:', error);  // In chi tiết lỗi
+    console.error('Error creating flashcard:', error);
     res.status(500).json({
       error: 'Failed to create flashcard',
-      details: error.toString(),  // Gửi chi tiết lỗi từ phía server
+      details: error.toString(),
     });
   }
 });
+
 
 
 
