@@ -113,17 +113,18 @@ app.post("/createFlashcard", async (req, res) => {
 // Update flashcard
 // PUT /updateFlashcard/:title
 router.put("/updateFlashcard/:title", async (req, res) => {
-  const { title } = req.params;
-  const { description, category, terms } = req.body || {};
-
-  if (!description || !category || !terms) {
-    return res.status(400).json({ error: "Thiếu dữ liệu trong body" });
-  }
+  const { title } = req.params; // title cũ
+  const { newTitle, description, category, terms } = req.body; // lấy title mới
 
   try {
     const updatedFlashcard = await Flashcard.findOneAndUpdate(
-      { title },
-      { description, category, terms },
+      { title }, // tìm theo title cũ
+      { 
+        title: newTitle || title, // nếu có newTitle thì cập nhật
+        description, 
+        category, 
+        terms 
+      },
       { new: true }
     );
 
@@ -138,6 +139,24 @@ router.put("/updateFlashcard/:title", async (req, res) => {
   }
 });
 
+
+// Xoá học phần theo id hoặc title
+router.delete("/deleteStudy/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedStudy = await Study.findByIdAndDelete(id);
+
+    if (!deletedStudy) {
+      return res.status(404).json({ error: "Học phần không tồn tại" });
+    }
+
+    res.json({ message: "Xoá học phần thành công", study: deletedStudy });
+  } catch (error) {
+    console.error("❌ Error deleting study:", error);
+    res.status(500).json({ error: "Lỗi server khi xoá học phần" });
+  }
+});
 
 
 
