@@ -87,21 +87,22 @@ router.post("/listFlashcard", (req, res) => {
 
 // ========================= API 3: Create Flashcard =========================
 app.post("/createFlashcard", async (req, res) => {
-  const { title, description, wordLang, meaningLang, terms } = req.body;
+  const { title, description, wordLang, meaningLang, terms, category } = req.body;
 
-  if (!title || !description || !wordLang || !meaningLang || !terms || terms.length === 0) {
+  if (!title || !wordLang || !meaningLang || !terms || terms.length === 0) {
     return res
       .status(400)
-      .json({ error: "Title, description, wordLang, meaningLang, and terms are required" });
+      .json({ error: "Title, wordLang, meaningLang, and terms are required" });
   }
 
   try {
     const newFlashcard = new Flashcard({
       title,
-      description,
+      description: description || "",   // nếu không có thì để rỗng
       wordLang,
       meaningLang,
       terms,
+      category: category || "Tất cả",   // nếu không có thì mặc định là "Tất cả"
     });
 
     await newFlashcard.save();
