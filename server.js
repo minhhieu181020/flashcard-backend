@@ -141,11 +141,12 @@ router.put("/updateFlashcard/:title", async (req, res) => {
 
 
 // Xoá học phần theo id hoặc title
-router.delete("/deleteStudy/:id", async (req, res) => {
-  const { id } = req.params;
+// Xoá học phần theo title
+router.delete("/deleteStudy/:title", async (req, res) => {
+  const { title } = req.params;
 
   try {
-    const deletedStudy = await Study.findByIdAndDelete(id);
+    const deletedStudy = await Study.findOneAndDelete({ title });
 
     if (!deletedStudy) {
       return res.status(404).json({ error: "Học phần không tồn tại" });
@@ -157,6 +158,7 @@ router.delete("/deleteStudy/:id", async (req, res) => {
     res.status(500).json({ error: "Lỗi server khi xoá học phần" });
   }
 });
+
 
 
 
