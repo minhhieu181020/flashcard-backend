@@ -143,19 +143,29 @@ router.put("/updateFlashcard/:title", async (req, res) => {
 // Xoá học phần theo id hoặc title
 // Xoá học phần theo title
 router.delete("/deleteStudy/:title", async (req, res) => {
-  const { title } = req.params;
+  const rawTitle = req.params.title;
+  const title = (rawTitle || "").trim();
+  console.log('DELETE /deleteStudy called, rawTitle=', rawTitle, 'decoded=', decodeURIComponent(rawTitle));
 
   try {
-const deletedStudy = await Study.findOneAndDelete({ title: new RegExp(`^${title}$`, "i") });
+    // thử tìm exact first
+    const found = await Study.findOne({ title });
+    console.log('found exact:', !!found, found && found.title);
 
-    if (!deletedStudy) {
+    // thử case-insensitive
+    const foundInsensitive = await Study.findOne({ title: new RegExp(`^${title}$`, 'i') });
+    console.log('found insensitive:', !!foundInsensitive, foundInsensitive && foundInsensitive.title);
+
+    if (!found && !foundInsensitive) {
       return res.status(404).json({ error: "Học phần không tồn tại" });
     }
 
-    res.json({ message: "Xoá học phần thành công", study: deletedStudy });
-  } catch (error) {
-    console.error("❌ Error deleting study:", error);
-    res.status(500).json({ error: "Lỗi server khi xoá học phần" });
+    const deleted = await Study.findOneAndDelete({ title }) || await Study.findOneAndDelete({ title: new RegExp(`^${title}$`, 'i') });
+
+    res.json({ message: "Xoá học phần thành công", study: deleted });
+  } catch (err) {
+    console.error('Error deleting study:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
   }
 });
 
@@ -164,7 +174,11 @@ const deletedStudy = await Study.findOneAndDelete({ title: new RegExp(`^${title}
 
 // Gắn router vào app
 app.use("/", router);
-
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  console.log('headers:', req.headers);
+  next();
+});
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running at ${PORT}`);
