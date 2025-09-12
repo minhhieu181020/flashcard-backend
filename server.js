@@ -86,46 +86,31 @@ router.post("/listFlashcard", (req, res) => {
 
 
 // ========================= API 3: Create Flashcard =========================
-app.post('/createFlashcard', async (req, res) => {
-  const { title, description, terms } = req.body;
+app.post("/createFlashcard", async (req, res) => {
+  const { title, description, wordLang, meaningLang, terms } = req.body;
 
-  // Kiểm tra các trường bắt buộc
-  if (!title || !description || !terms || terms.length === 0) {
-    console.error('Missing fields: ', { title, description, terms });
-    return res.status(400).json({ error: 'All fields (title, description, and terms) are required.' });
+  if (!title || !description || !wordLang || !meaningLang || !terms || terms.length === 0) {
+    return res
+      .status(400)
+      .json({ error: "Title, description, wordLang, meaningLang, and terms are required" });
   }
 
   try {
-    // Kiểm tra xem title có bị trùng hay không
-    const existingFlashcard = await Flashcard.findOne({ title });
-
-    if (existingFlashcard) {
-      return res.status(400).json({ error: 'Flashcard with this title already exists.' });
-    }
-
-    // Nếu title không trùng, tạo flashcard mới
     const newFlashcard = new Flashcard({
       title,
       description,
+      wordLang,
+      meaningLang,
       terms,
     });
 
-    // Lưu flashcard vào MongoDB
     await newFlashcard.save();
-
-    res.status(201).json({
-      message: 'Flashcard created successfully!',
-      flashcard: newFlashcard,
-    });
-  } catch (error) {
-    console.error('Error creating flashcard:', error);
-    res.status(500).json({
-      error: 'Failed to create flashcard',
-      details: error.toString(),
-    });
+    res.status(200).json({ message: "Flashcard created successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
-
 
 
 
