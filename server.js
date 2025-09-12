@@ -24,7 +24,8 @@ mongoose.connect(mongoURI, {
 // Schema và Model cho Flashcard
 const flashcardSchema = new mongoose.Schema({
   title: { type: String, required: true, unique: true },  // Đảm bảo title là duy nhất
-  description: { type: String, required: true },
+  description: { type: String, required: false },
+  category: {type: String, required: false},
   terms: [
     {
       term: { type: String, required: true },
@@ -87,12 +88,12 @@ router.post("/listFlashcard", (req, res) => {
 
 // ========================= API 3: Create Flashcard =========================
 app.post("/createFlashcard", async (req, res) => {
-  const { title, description, wordLang, meaningLang, terms, category } = req.body;
+  const { title, description, terms, category } = req.body;
 
   if (!title || !terms || terms.length === 0) {
     return res
       .status(400)
-      .json({ error: "Title, wordLang, meaningLang, and terms are required" });
+      .json({ error: "Title, and terms are required" });
   }
 
   try {
