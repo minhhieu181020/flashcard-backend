@@ -146,7 +146,7 @@ router.delete("/deleteStudy/:title", async (req, res) => {
   const { title } = req.params;
 
   try {
-    const deletedStudy = await Study.findOneAndDelete({ title });
+const deletedStudy = await Study.findOneAndDelete({ title: new RegExp(`^${title}$`, "i") });
 
     if (!deletedStudy) {
       return res.status(404).json({ error: "Học phần không tồn tại" });
