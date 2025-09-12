@@ -110,6 +110,35 @@ app.post("/createFlashcard", async (req, res) => {
   }
 });
 
+// Update flashcard
+// PUT /updateFlashcard/:title
+router.put("/updateFlashcard/:title", async (req, res) => {
+  const { title } = req.params;
+  const { description, category, terms } = req.body || {};
+
+  if (!description || !category || !terms) {
+    return res.status(400).json({ error: "Thiếu dữ liệu trong body" });
+  }
+
+  try {
+    const updatedFlashcard = await Flashcard.findOneAndUpdate(
+      { title },
+      { description, category, terms },
+      { new: true }
+    );
+
+    if (!updatedFlashcard) {
+      return res.status(404).json({ error: "Flashcard không tồn tại" });
+    }
+
+    res.json({ message: "Cập nhật thành công", flashcard: updatedFlashcard });
+  } catch (error) {
+    console.error("❌ Error updating flashcard:", error);
+    res.status(500).json({ error: "Lỗi server khi update" });
+  }
+});
+
+
 
 
 // Gắn router vào app
