@@ -23,15 +23,15 @@ mongoose.connect(mongoURI, {
 
 // Schema và Model cho Flashcard
 const flashcardSchema = new mongoose.Schema({
-  title: { type: String, required: true, unique: true },  // Đảm bảo title là duy nhất
-  description: { type: String, required: false },
-  category: {type: String, required: false},
+  title: { type: String, required: true, unique: true },
+  description: { type: String, default: "" },
   terms: [
     {
       term: { type: String, required: true },
       meaning: { type: String, required: true }
     }
   ],
+  category: { type: String, default: "Tất cả" }, // ⚡ thêm vào đây
   date: { type: Date, default: Date.now },
 });
 
@@ -91,24 +91,22 @@ app.post("/createFlashcard", async (req, res) => {
   const { title, description, terms, category } = req.body;
 
   if (!title || !terms || terms.length === 0) {
-    return res
-      .status(400)
-      .json({ error: "Title, and terms are required" });
+    return res.status(400).json({ error: "Title and terms are required" });
   }
 
   try {
     const newFlashcard = new Flashcard({
       title,
-      description: description || "",   // nếu không có thì để rỗng
+      description: description || "",
       terms,
-      category: category || "Tất cả",   // nếu không có thì mặc định là "Tất cả"
+      category: category || "Tất cả",
     });
 
     await newFlashcard.save();
     res.status(200).json({ message: "Flashcard created successfully!" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Error saving flashcard:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
   }
 });
 
