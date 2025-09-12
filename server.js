@@ -89,7 +89,7 @@ router.post("/listFlashcard", (req, res) => {
 app.post("/createFlashcard", async (req, res) => {
   const { title, description, wordLang, meaningLang, terms, category } = req.body;
 
-  if (!title || !wordLang || !meaningLang || !terms || terms.length === 0) {
+  if (!title || !terms || terms.length === 0) {
     return res
       .status(400)
       .json({ error: "Title, wordLang, meaningLang, and terms are required" });
@@ -99,8 +99,6 @@ app.post("/createFlashcard", async (req, res) => {
     const newFlashcard = new Flashcard({
       title,
       description: description || "",   // nếu không có thì để rỗng
-      wordLang,
-      meaningLang,
       terms,
       category: category || "Tất cả",   // nếu không có thì mặc định là "Tất cả"
     });
