@@ -142,32 +142,16 @@ router.put("/updateFlashcard/:title", async (req, res) => {
 
 // Xoá học phần theo id hoặc title
 // Xoá học phần theo title
+// Xoá học phần theo title trong URL
 router.delete("/deleteStudy/:title", async (req, res) => {
-  const rawTitle = req.params.title;
-  const title = (rawTitle || "").trim();
-  console.log('DELETE /deleteStudy called, rawTitle=', rawTitle, 'decoded=', decodeURIComponent(rawTitle));
+  const { title } = req.params;
 
-  try {
-    // thử tìm exact first
-    const found = await Study.findOne({ title });
-    console.log('found exact:', !!found, found && found.title);
+  const deleted = await Flashcard.findOneAndDelete({ title }); // ⚡ dùng Flashcard thay vì Study
+  if (!deleted) return res.status(404).json({ error: "Không tìm thấy học phần" });
 
-    // thử case-insensitive
-    const foundInsensitive = await Study.findOne({ title: new RegExp(`^${title}$`, 'i') });
-    console.log('found insensitive:', !!foundInsensitive, foundInsensitive && foundInsensitive.title);
-
-    if (!found && !foundInsensitive) {
-      return res.status(404).json({ error: "Học phần không tồn tại" });
-    }
-
-    const deleted = await Study.findOneAndDelete({ title }) || await Study.findOneAndDelete({ title: new RegExp(`^${title}$`, 'i') });
-
-    res.json({ message: "Xoá học phần thành công", study: deleted });
-  } catch (err) {
-    console.error('Error deleting study:', err);
-    res.status(500).json({ error: 'Server error', details: err.message });
-  }
+  res.json({ message: "Xoá thành công", deleted });
 });
+
 
 
 
