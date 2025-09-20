@@ -3,9 +3,15 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const router = express.Router();
+const cors = require("cors"); // ✅ sửa chỗ này
 
 // Middleware để parse JSON
 app.use(express.json());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://flashcard-web.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 // Kết nối MongoDB
 const mongoURI = 'mongodb+srv://flashcardUser:hieu181020@FlashCard.iknr9ht.mongodb.net/?retryWrites=true&w=majority&appName=FlashCard';
